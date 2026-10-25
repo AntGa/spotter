@@ -1,4 +1,6 @@
-use poise::serenity_prelude as serenity;
+use chrono::{DateTime, Utc};
+use poise::serenity_prelude::{self as serenity, Guild};
+use serenity::{ChannelId, GuildId, UserId};
 
 struct Data {}
 type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -12,6 +14,43 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     ctx.say("pong!").await?;
     Ok(())
+}
+
+#[derive(Debug)]
+struct RunPlan {
+    planned_distance_m: Option<i32>,
+}
+
+#[derive(Debug)]
+enum Activity {
+    Gym,
+    Run(RunPlan),
+}
+
+#[derive(Debug)]
+struct Session {
+    id: i64,
+    name: String,
+    activity: Activity,
+    location: Option<String>,
+    host: UserId,
+    starts_at: DateTime<Utc>,
+    created_at: DateTime<Utc>,
+    cancelled_at: Option<DateTime<Utc>>,
+    channel_id: ChannelId,
+    guild_id: GuildId,
+}
+
+#[derive(Debug)]
+struct Member {
+    user_id: UserId,
+    joined_at: DateTime<Utc>,
+}
+
+#[derive(Debug)]
+struct SessionDetails {
+    session: Session,
+    members: Vec<Member>,
 }
 
 #[tokio::main]
